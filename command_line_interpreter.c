@@ -89,10 +89,11 @@ int showPrompt(void)
 	return (0);
 }
 /**
- * breakCommand -
+ * BreakCommand - loop control statement used to
+ * terminate the loop.
  *
- * @param str
- * @return int
+ * @param str: array of characters
+ * Return:int
  */
 int breakCommand(char *str)
 {
