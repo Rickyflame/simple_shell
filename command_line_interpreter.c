@@ -5,34 +5,25 @@
 #include <fcntl.h>
 #include <errno.h>
 
-int batchMode = 0;
 /**
  * showPrompt - initializes the command prompt
  * return: void has no return value
  */
 int showPrompt(void)
 {
-	char *cmds[100];
-	char buffer[100];
-	char *tmp;
-	int num_cmds = 0, i = 0, flag, rc = 0;
-	int breakString();
-    int j = i - 2;
-    int numCmndsToFork = num_cmds;
-    int endingWithPlus = 0;
+	char *cmds[100], buffer[100], *tmp;
+	int num_cmds = 0, i = 0, flag, rc = 0, endingWithPlus = 0;
 
+	int breakString(void), numCmndsToFork = num_cmds, j = i - 2;
 
 	while (!rc)
 	{
-		num_cmds = 0;
 		printf("\n./command_line_interpreter%% ");
 		fgets(buffer, 512, stdin);
 
 		for (i = 0; buffer[i] != '\0'; i++)
-		{
 			if (buffer[i] == '+')
 				flag++;
-		}
 		for (; j >= 0; j--)
 		{
 			if (buffer[j] == ' ')
@@ -46,14 +37,12 @@ int showPrompt(void)
 				break;
 		}
 		tmp = strtok(buffer, "+");
-
 		while (tmp)
 		{
 			cmds[num_cmds] = tmp;
 			num_cmds++;
 			tmp = strtok(NULL, "+");
 		}
-
 		if (flag == 0)
 		{
 			if ((rc = breakString(buffer)) == 101)
@@ -76,6 +65,7 @@ int showPrompt(void)
 			for (i = 0; i < numCmndsToFork; i++)
 			{
 				int ret;
+
 				if ((ret = fork()) > 0)
 				{
 				}
@@ -89,7 +79,8 @@ int showPrompt(void)
 				}
 				else
 				{
-					char error_message[30] = "An error has occured\n";
+					char error_message[30] = "An error has occurred\n";
+
 					write(STDERR_FILENO, error_message, strlen(error_message));
 				}
 			}
@@ -105,14 +96,9 @@ int showPrompt(void)
  */
 int breakCommand(char *str)
 {
-	char *tmp;
-	char *subcmds[1000];
-	char buffer[1000];
-    int num_subcmds = 0;
-    char *subnew[1000];
-    int out, flag1 = 0;
-    int j, loc = 0;
-    int i, savedJ, flag2 = 0;
+	char *tmp, *subcmds[1000], buffer[1000], *subnew[1000];
+	int num_subcmds = 0, out, flag1 = 0, j = 0, loc = 0, i, savedJ, flag2 = 0;
+
 	strcpy(buffer, str);
 	tmp = strtok(buffer, " \n\t");
 
@@ -121,10 +107,6 @@ int breakCommand(char *str)
 		subcmds[num_subcmds] = tmp;
 		num_subcmds++;
 		tmp = strtok(NULL, " \n\t");
-	}
-
-	for (j = 0; j < num_subcmds; j++)
-	{
 	}
 	subcmds[j] = NULL;
 
@@ -148,7 +130,6 @@ int breakCommand(char *str)
 		}
 		subnew[loc] = NULL;
 	}
-
 	if (flag1 != 1)
 		for (j = 0; j < num_subcmds; j++)
 		{
@@ -173,17 +154,18 @@ int breakCommand(char *str)
 	{
 		close(STDOUT_FILENO);
 		out = open(subcmds[loc + 1], O_RDWR | O_CREAT, 0666);
-
 		if (out < 0)
 		{
-			char error_message[30] = "An error has occured\n";
+			char error_message[30] = "An error has occurred\n";
+
 			write(STDERR_FILENO, error_message, strlen(error_message));
 			exit(0);
 		}
 		dup2(out, STDOUT_FILENO);
 		if (execvp(subnew[0], subnew) < 0)
 		{
-			char error_message[30] = "An error has occured\n";
+			char error_message[30] = "An error has occurred\n";
+
 			write(STDERR_FILENO, error_message, strlen(error_message));
 			exit(101);
 		}
@@ -197,14 +179,16 @@ int breakCommand(char *str)
 
 		if (out < 0)
 		{
-			char error_message[30] = "An error has occured\n";
+			char error_message[30] = "An error has occurred\n";
+
 			write(STDERR_FILENO, error_message, strlen(error_message));
 			exit(0);
 		}
 		dup2(out, STDOUT_FILENO);
 		if (execvp(subnew[0], subnew) < 0)
 		{
-			char error_message[30] = "An error has occured\n";
+			char error_message[30] = "An error has occurred\n";
+
 			write(STDERR_FILENO, error_message, strlen(error_message));
 			exit(101);
 		}
@@ -214,36 +198,34 @@ int breakCommand(char *str)
 	else if (strcmp(subcmds[0], "cd") == 0)
 	{
 		int res;
+
 		if (subcmds[1] != NULL)
-		{
 			res = chdir(subcmds[1]);
-		}
 		else
-		{
 			res = chdir(getenv("HOME"));
-		}
 		if (res == -1)
 		{
-			char error_message[30] = "An error has occured\n";
+			char error_message[30] = "An error has occurred\n";
+
 			write(STDERR_FILENO, error_message, strlen(error_message));
 			exit(101);
 		}
 	}
 	else if (strcmp(subcmds[0], "exit") == 0)
-	{
 		exit(0);
-	}
 	else if (strcmp(subcmds[0], "pwd") == 0)
 	{
 		if (subcmds[1] != NULL)
 		{
 			char error_message[30] = "An error has occurred\n";
+
 			write(STDERR_FILENO, error_message, strlen(error_message));
 			exit(0);
 		}
 		else if (execvp(subcmds[0], subcmds) < 0)
 		{
 			char error_message[30] = "An error has occurred\n";
+
 			write(STDERR_FILENO, error_message, strlen(error_message));
 			exit(101);
 		}
@@ -251,6 +233,7 @@ int breakCommand(char *str)
 	else if (execvp(subcmds[0], subcmds) < 0)
 	{
 		char error_message[30] = "An error has occurred\n";
+
 		write(STDERR_FILENO, error_message, strlen(error_message));
 		return (1);
 	}
@@ -258,13 +241,9 @@ int breakCommand(char *str)
 }
 int breakString(char *str)
 {
-	char *tmp;
-	char *subcmds[1000];
-	char buffer[1000];
-    int num_subcmds = 0;
-    int waitpid();
-    int j, status;
-    int x = WEXITSTATUS(status);
+	char *tmp, *subcmds[1000], buffer[1000];
+	int num_subcmds = 0, waitpid(), j, status, x = WEXITSTATUS(status);
+
 	strcpy(buffer, str);
 	tmp = strtok(buffer, ";");
 
@@ -279,13 +258,9 @@ int breakString(char *str)
 		int ret;
 
 		if ((subcmds[j][0] == 'c' && subcmds[j][1] == 'd') == 1)
-		{
 			breakCommand(subcmds[j]);
-		}
 		else if (strcmp(subcmds[j], "exit") == 0)
-		{
 			breakCommand(subcmds[j]);
-		}
 		else
 		{
 			if ((ret = fork()) > 0)
@@ -308,29 +283,25 @@ int breakString(char *str)
 			else
 			{
 				char error_message[30] = "An error has occurred\n";
+
 				write(STDERR_FILENO, error_message, strlen(error_message));
 				exit(101);
 			}
 		}
-	}return (0);
+	} return (0);
 }
 int main(int argc, char *argv[])
 {
-	char *cmds[1000];
-	char buffer[1000] = "test";
-	char *tmp;
-	int num_cmds = 0, i, flag, rc = 0;
-	char *fileToRead = "/no/such/file";
-	int waitpid();
-    int j;
-    int endingWithPlus = 0;
-    int numCmndsToFork = num_cmds;
-    FILE *new;
-    FILE *fp;
+	char *cmds[1000], buffer[1000] = "test", *tmp, *fileToRead = "/no/such/file";
+	int num_cmds = 0, i, flag, rc = 0, waitpid(), j;
+	int endingWithPlus = 0, numCmndsToFork = num_cmds, batchMode = 0;
+	FILE *new;
+	FILE *fp;
 
 	if (argc > 2)
 	{
 		char error_message[30] = "An error has occurred\n";
+
 		write(STDERR_FILENO, error_message, strlen(error_message));
 		exit(1);
 	}
@@ -345,7 +316,8 @@ int main(int argc, char *argv[])
 		fp = fopen(fileToRead, "r");
 		if (fp == NULL)
 		{
-			char error_message[30] = "An error has occured\n";
+			char error_message[30] = "An error has occurred\n";
+
 			write(STDERR_FILENO, error_message, strlen(error_message));
 			exit(1);
 		}
@@ -353,7 +325,6 @@ int main(int argc, char *argv[])
 	}
 	else
 		new = stdin;
-
 	while (!feof(new))
 	{
 		num_cmds = 0;
@@ -371,14 +342,10 @@ int main(int argc, char *argv[])
 			write(STDOUT_FILENO, buffer, strlen(buffer));
 			write(STDOUT_FILENO, "n", strlen("\n"));
 			if (strcmp(buffer, "+") == 0)
-			{
 				exit(0);
-			}
 		}
 		if (strcmp(buffer, "xyz") == 0)
-		{
 			exit(0);
-		}
 		for (i = 0; buffer[i] != '\0'; i++)
 		{
 			if (buffer[i] == '+')
@@ -386,7 +353,8 @@ int main(int argc, char *argv[])
 		}
 		if (strlen(buffer) == 0)
 		{
-			char error_message[30] = "An error has occured\n";
+			char error_message[30] = "An error has occurred\n";
+
 			write(STDERR_FILENO, error_message, strlen(error_message));
 		}
 		j = i - 2;
@@ -433,6 +401,7 @@ int main(int argc, char *argv[])
 			for (i = numCmndsToFork - 1; i >= 0; i--)
 			{
 				int ret;
+
 				if ((ret = fork()) > 0)
 				{
 					while (1)
@@ -450,22 +419,19 @@ int main(int argc, char *argv[])
 							int x = WEXITSTATUS(status);
 
 							if (!WIFEXITED(x) || WEXITSTATUS(x) != 101)
-							{
 								exit(0);
-							}
 						}
 					}
 				}
 				else if (ret == 0)
 				{
 					if (breakString(cmds[i]) == 101)
-					{
 						exit(0);
-					}
 				}
 				else
 				{
 					char error_message[30] = "An error has occurred\n";
+
 					write(STDERR_FILENO, error_message, strlen(error_message));
 
 					exit(0);
