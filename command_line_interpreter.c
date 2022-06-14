@@ -92,7 +92,7 @@ int showPrompt(void)
  * BreakCommand - loop control statement used to
  * terminate the loop.
  *
- * @param str: array of characters
+ * @str: array of characters
  * Return:int
  */
 int breakCommand(char *str)
