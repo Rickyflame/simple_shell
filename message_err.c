@@ -105,7 +105,7 @@ char *error_2_cd(char **args)
 	_strcat(error, ": ");
 	_strcat(error, hist_str);
 	if (args[0][0] == '-')
-		_strcat(error, ": cd: Illegal optin ");
+		_strcat(error, ": cd: Illegal option ");
 	else
 		_strcat(error, ": cd: can't cd to ");
 	_strcat(error, args[0]);
